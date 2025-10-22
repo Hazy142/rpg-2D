@@ -1,0 +1,72 @@
+[gd_scene load_steps=13 format=3 uid="uid://blb5rj4wawamg"]
+
+[ext_resource type="Script" uid="uid://6evb0kp0rbwp" path="res://data/modules/tactics/level/tactics_level.gd" id="1_4gyi1"]
+[ext_resource type="Script" uid="uid://bt85bn1v7pn6s" path="res://data/models/view/camera/tactics/t_cam_res.gd" id="2_ppb6n"]
+[ext_resource type="Script" uid="uid://b4povsc6dr2re" path="res://data/models/view/control/tactics/t_ctrl_res.gd" id="3_0ui1d"]
+[ext_resource type="Script" uid="uid://csmtmuvym7rg4" path="res://data/modules/tactics/level/arena/tactics_arena.gd" id="3_mlpgb"]
+[ext_resource type="Script" uid="uid://ce3ynv02kpt1s" path="res://scripts/WorldGeneration.gd" id="4_mlpgb"]
+[ext_resource type="Script" uid="uid://dvbcgh0oeviul" path="res://data/modules/tactics/level/participants/tactics_participant.gd" id="5_breuy"]
+[ext_resource type="PackedScene" uid="uid://8x2rssxosm7i" path="res://data/modules/stats/expertise/expertise.tscn" id="7_2t7xk"]
+[ext_resource type="Script" uid="uid://bqnuy31e6kh1s" path="res://data/modules/tactics/level/participants/player/tactics_player.gd" id="7_3m485"]
+[ext_resource type="PackedScene" uid="uid://6eofg7n4asn5" path="res://data/modules/tactics/level/pawn/pawn.tscn" id="8_08tl5"]
+[ext_resource type="Script" uid="uid://d2n3sdbpe48ia" path="res://data/modules/tactics/level/participants/opponent/tactics_opponent.gd" id="14_t1tcx"]
+
+[sub_resource type="Resource" id="Resource_sxi4h"]
+script = ExtResource("2_ppb6n")
+move_speed = 0
+rotation_speed = 0
+smoothing = 0.1
+camera_zoom_speed = 0.5
+zoom_smoothness = 0.1
+zoom_duration = 0.5
+min_zoom = 1.0
+max_zoom = 10.0
+boundary_radius = 10.0
+border_pan_px_threshold = 1.0
+mouse_pan_speed = 0.5
+joy_pan_speed = 0.5
+quad_snap_duration = 0.2
+vertical_rot = 0
+horizontal_rot = 0
+z_rot = 0
+metadata/_custom_type_script = "uid://bt85bn1v7pn6s"
+
+[sub_resource type="Resource" id="Resource_xq330"]
+script = ExtResource("3_0ui1d")
+is_joystick = false
+input_hints_folded = false
+metadata/_custom_type_script = "uid://b4povsc6dr2re"
+
+[node name="ProceduralLevel" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.232496, 0)
+script = ExtResource("1_4gyi1")
+camera = SubResource("Resource_sxi4h")
+ui_control = SubResource("Resource_xq330")
+
+[node name="TacticsArena" type="Node3D" parent="."]
+script = ExtResource("3_mlpgb")
+arena_type = "PROCEDURAL"
+
+[node name="Tiles" type="Node3D" parent="TacticsArena"]
+
+[node name="WorldGeneration" type="Node3D" parent="TacticsArena/Tiles"]
+script = ExtResource("4_mlpgb")
+
+[node name="TacticsParticipant" type="Node3D" parent="."]
+script = ExtResource("5_breuy")
+
+[node name="TacticsPlayer" type="Node3D" parent="TacticsParticipant"]
+script = ExtResource("7_3m485")
+
+[node name="Pawn" parent="TacticsParticipant/TacticsPlayer" instance=ExtResource("8_08tl5")]
+
+[node name="Expertise" parent="TacticsParticipant/TacticsPlayer/Pawn" instance=ExtResource("7_2t7xk")]
+
+[node name="TacticsOpponent" type="Node3D" parent="TacticsParticipant"]
+script = ExtResource("14_t1tcx")
+
+[node name="Pawn" parent="TacticsParticipant/TacticsOpponent" instance=ExtResource("8_08tl5")]
+
+[node name="Expertise" parent="TacticsParticipant/TacticsOpponent/Pawn" instance=ExtResource("7_2t7xk")]
+
+[node name="UI" type="CanvasLayer" parent="."]
