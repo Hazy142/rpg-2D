@@ -1,6 +1,6 @@
 [gd_scene load_steps=18 format=3 uid="uid://6eofg7n4asn5"]
 
-[ext_resource type="Script" uid="uid://c0biemq84amh5" path="res://data/modules/tactics/level/pawn/pawn.gd" id="1"]
+[ext_resource type="Script" uid="uid://bksvq13icc4ma" path="res://data/modules/tactics/level/pawn/pawn.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://bob12its3i651" path="res://assets/textures/actor/chr_pawn_placeholder.png" id="2"]
 [ext_resource type="Script" uid="uid://djet8bgmd46ey" path="res://data/models/world/combat/participant/pawn/service/sprite.gd" id="3_cbwp5"]
 
