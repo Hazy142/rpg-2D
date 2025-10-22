@@ -1,8 +1,6 @@
 class_name WorldGeneration
 extends Node3D
 
-static var instance: WorldGeneration
-
 const GENERATION_BOUND_DISTANCE = 16
 const VERTICAL_AMPLITUDE = 10
 
@@ -11,7 +9,8 @@ var generated_cubes = {}
 var procedural_tiles = {}
 
 func _ready():
-	WorldGeneration.instance = self
+	# Autoload ist bereits global verfügbar als "WorldGeneration"
+	# Keine zusätzliche Initialisierung nötig
 	generated_cubes = {}
 	generate_new_cubes_from_position(Vector3(0, 0, 0))
 	print("✓ Procedural terrain created! (%d cubes)" % get_child_count())
