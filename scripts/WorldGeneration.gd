@@ -1,4 +1,5 @@
-extends Node3D
+class_name WorldGenerationSingleton
+extends Node # Renamed to avoid conflict with autoload
 
 const GENERATION_BOUND_DISTANCE = 16
 const VERTICAL_AMPLITUDE = 10

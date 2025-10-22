@@ -25,6 +25,15 @@ func _init(_res: TacticsParticipantResource, _camera: TacticsCameraResource, _co
 	arena = _arena
 
 
+## Helper function to get TacticsTile from ProceduralTile if needed
+## @param tile: The tile to convert (ProceduralTile or TacticsTile)
+## @return: TacticsTile resource
+func _get_tactics_tile(tile) -> TacticsTile:
+	if tile is ProceduralTile:
+		return tile.tile_resource
+	return tile as TacticsTile
+
+
 ## Toggles the display of enemy pawn stats
 ##
 ## @param opponent_node: The opponent's node containing enemy pawns
@@ -58,7 +67,11 @@ func is_pawn_configured(player: TacticsPlayer) -> bool:
 func show_available_pawn_actions() -> void:
 	controls.set_actions_menu_visibility(true, res.curr_pawn)
 	arena.reset_all_tile_markers()
-	arena.mark_hover_tile(res.curr_pawn.get_tile())
+	# ✅ FIX [ERR-001]: Convert ProceduralTile to TacticsTile
+	var tile = res.curr_pawn.get_tile()
+	if tile:
+		var tactics_tile = _get_tactics_tile(tile)
+		arena.mark_hover_tile(tactics_tile)
 
 
 ## Displays available movement options for the current pawn
@@ -70,8 +83,14 @@ func show_available_movements() -> void:
 		return
 	
 	camera.target = p
-	arena.process_surrounding_tiles(p.get_tile(), int(p.stats.movement), p.get_parent().get_children())
-	arena.mark_reachable_tiles(p.get_tile(), p.stats.movement)
+	
+	# ✅ FIX [ERR-001]: Convert ProceduralTile to TacticsTile for all arena calls
+	var tile = p.get_tile()
+	if tile:
+		var tactics_tile = _get_tactics_tile(tile)
+		arena.process_surrounding_tiles(tactics_tile, int(p.stats.movement), p.get_parent().get_children())
+		arena.mark_reachable_tiles(tactics_tile, p.stats.movement)
+	
 	res.stage = res.STAGE_SELECT_LOCATION
 
 
@@ -85,8 +104,14 @@ func display_attackable_targets() -> void:
 	res.display_opponent_stats = true
 	
 	camera.target = p
-	arena.process_surrounding_tiles(p.get_tile(), float(p.stats.attack_range))
-	arena.mark_attackable_tiles(p.get_tile(), float(p.stats.attack_range))
+	
+	# ✅ FIX [ERR-001]: Convert ProceduralTile to TacticsTile for all arena calls
+	var tile = p.get_tile()
+	if tile:
+		var tactics_tile = _get_tactics_tile(tile)
+		arena.process_surrounding_tiles(tactics_tile, float(p.stats.attack_range))
+		arena.mark_attackable_tiles(tactics_tile, float(p.stats.attack_range))
+	
 	res.stage = res.STAGE_SELECT_ATTACK_TARGET
 
 

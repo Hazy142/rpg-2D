@@ -26,10 +26,8 @@ func get_3d_canvas_mouse_position(collision_mask: int, ctrl: TacticsControls) ->
 		var hit = input_capture.project_mouse_position(collision_mask, controls.is_joystick)
 		
 		# ===== Conversion: StaticBody3D → ProceduralTile =====
-		if hit is StaticBody3D and not WorldService.procedural_tiles.is_empty():
-			for proc_tile in WorldService.procedural_tiles.values():
-				if proc_tile.terrain_node == hit:
-					return proc_tile as BaseTile # Explicitly cast to BaseTile for clarity
+		if hit is StaticBody3D and hit.has_meta("tile_data"):
+			return hit.get_meta("tile_data") as BaseTile
 		
 		return hit
 	else:
