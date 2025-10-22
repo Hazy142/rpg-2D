@@ -1,5 +1,7 @@
-class_name WorldGeneration 
+class_name WorldGeneration
 extends Node3D
+
+static var instance: WorldGeneration
 
 const GENERATION_BOUND_DISTANCE = 16
 const VERTICAL_AMPLITUDE = 10
