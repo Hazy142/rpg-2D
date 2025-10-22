@@ -38,7 +38,7 @@ func select_pawn(player: TacticsPlayer, ctrl: TacticsControls) -> void:
 ## Selects the pawn currently hovered by the mouse.
 func _select_hovered_pawn(ctrl: TacticsControls) -> PhysicsBody3D:
 	var pawn: TacticsPawn = input_service.get_3d_canvas_mouse_position(2, ctrl)
-	var tile: BaseTile = input_service.get_3d_canvas_mouse_position(1, ctrl) if not pawn else pawn.get_tile()
+	var tile: BaseTile = input_service.get_3d_canvas_mouse_position(1, ctrl) as BaseTile if not pawn else pawn.get_tile() as BaseTile
 	arena.mark_hover_tile(tile)
 	return pawn if pawn else tile.get_tile_occupier() if tile else null
 

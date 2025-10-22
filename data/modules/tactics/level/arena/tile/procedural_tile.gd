@@ -4,13 +4,17 @@ extends BaseTile
 
 var terrain_node: StaticBody3D
 var grid_position: Vector3
+var _static_body: StaticBody3D  # ← HINZUFÜGEN!
+var _initial_position: Vector3  # ← HINZUFÜGEN!
 
-func _init(node: StaticBody3D, pos: Vector3) -> void:
-	terrain_node = node
-	grid_position = pos
-	# Wichtig: Setze dich selbst auf die Position des Terrain-Nodes!
-	global_position = terrain_node.global_position
+func _init(static_body: StaticBody3D = null, position: Vector3 = Vector3.ZERO):
+	_static_body = static_body
+	_initial_position = position  # Speichere ab
 
+func _ready():
+	# Setze Position erst wenn im Tree
+	if _initial_position != Vector3.ZERO:
+		global_position = _initial_position
 
 ## Procedural tiles are always considered walkable.
 func is_walkable() -> bool:

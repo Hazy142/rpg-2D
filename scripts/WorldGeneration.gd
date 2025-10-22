@@ -1,4 +1,3 @@
-class_name WorldGeneration
 extends Node3D
 
 const GENERATION_BOUND_DISTANCE = 16
@@ -25,6 +24,7 @@ func generate_new_cubes_from_position(center_position):
 		for z in range(start_z, end_z):
 			generate_cube_if_new(x, z)
 
+# NACHHER (RICHTIG):
 func generate_cube_if_new(x, z):
 	if not has_cube_been_generated(x, z):
 		var noise_val = noise.get_noise_2d(x, z)
@@ -32,12 +32,12 @@ func generate_cube_if_new(x, z):
 		var static_body = create_cube(Vector3(x, height, z), get_color_from_noise(noise_val))
 		register_cube_generation_at_coordinate(x, z)
 
-		# FIX: Erstelle die logische Kachel, verknüpfe sie via Meta-Data und füge sie zum Szenenbaum hinzu.
-		var proc_tile = ProceduralTile.new(static_body, Vector3(x, height, z))
+		# ✅ FIX: Erstelle ProceduralTile ABER NICHT mit Parametern die global_position brauchen!
+		# Stattdessen: Erstelle es, adde es zum Tree, DANN setze die Position!
+		var proc_tile = ProceduralTile.new()  # Keine Parameter!
+		add_child(proc_tile)
+		proc_tile.global_position = Vector3(x, height, z)
 		static_body.set_meta("tile_data", proc_tile)
-		add_child(proc_tile) # Wichtig, damit is_inside_tree() funktioniert!
-
-		# Das Dictionary ist jetzt optional, aber wir behalten es für mögliche andere Logiken.
 		procedural_tiles[Vector3(x, 0, z)] = proc_tile
 
 func has_cube_been_generated(x, z):
