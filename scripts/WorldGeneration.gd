@@ -1,3 +1,4 @@
+class_name WorldGeneration
 extends Node3D
 
 const GENERATION_BOUND_DISTANCE = 16
