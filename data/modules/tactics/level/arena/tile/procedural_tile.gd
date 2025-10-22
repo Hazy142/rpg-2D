@@ -6,6 +6,7 @@ var terrain_node: StaticBody3D
 var grid_position: Vector3
 var _static_body: StaticBody3D  # ← HINZUFÜGEN!
 var _initial_position: Vector3  # ← HINZUFÜGEN!
+var tile_resource: TacticsTile  # ← DIESES PROPERTY FEHLT!
 
 func _init(static_body: StaticBody3D = null, position: Vector3 = Vector3.ZERO):
 	_static_body = static_body

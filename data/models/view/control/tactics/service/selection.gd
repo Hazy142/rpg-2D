@@ -39,20 +39,32 @@ func select_pawn(player: TacticsPlayer, ctrl: TacticsControls) -> void:
 func _select_hovered_pawn(ctrl: TacticsControls) -> PhysicsBody3D:
 	var pawn: TacticsPawn = input_service.get_3d_canvas_mouse_position(2, ctrl)
 	var tile: BaseTile = input_service.get_3d_canvas_mouse_position(1, ctrl) as BaseTile if not pawn else pawn.get_tile()
-	arena.mark_hover_tile(tile)
+
+	if tile is ProceduralTile:
+		arena.mark_hover_tile(tile.tile_resource)
+	else:
+		arena.mark_hover_tile(tile as TacticsTile)
 	return pawn if pawn else tile.get_tile_occupier() if tile else null
 
 ## Selects the tile currently hovered by the mouse.
 func _select_hovered_tile(ctrl: TacticsControls) -> BaseTile: # Already BaseTile, no change needed here
 	var pawn: TacticsPawn = input_service.get_3d_canvas_mouse_position(2, ctrl)
 	var tile: BaseTile = input_service.get_3d_canvas_mouse_position(1, ctrl) as BaseTile if not pawn else pawn.get_tile()
-	arena.mark_hover_tile(tile)
+	if tile is ProceduralTile:
+		arena.mark_hover_tile(tile.tile_resource)
+	else:
+		arena.mark_hover_tile(tile as TacticsTile)
 	return tile
 
 ## Handles the selection of a new location for the current pawn.
 func select_new_location(ctrl: TacticsControls) -> void:
 	var tile: BaseTile = input_service.get_3d_canvas_mouse_position(1, ctrl)
-	arena.mark_hover_tile(tile)
+	if tile is ProceduralTile:
+		arena.mark_hover_tile(tile.tile_resource)
+	else:
+		arena.mark_hover_tile(tile as TacticsTile)
+
+
 	if Input.is_action_just_pressed("ui_accept") and tile and tile.reachable:
 		ctrl.curr_pawn.res.pathfinding_tilestack = arena.get_pathfinding_tilestack(tile)
 		t_cam.target = tile as Node3D
