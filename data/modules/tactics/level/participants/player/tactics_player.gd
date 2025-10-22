@@ -6,8 +6,6 @@ extends TacticsParticipant
 ## Service: [TacticsPlayerService]
 
 ## Service handling player-specific logic and operations
-@export var opponent: TacticsOpponent
-
 var player_serv: TacticsPlayerService
 
 

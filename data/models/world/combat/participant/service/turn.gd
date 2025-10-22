@@ -72,7 +72,7 @@ func handle_opponent_turn(delta: float, opponent: TacticsOpponent, participant: 
 		res.STAGE_SELECT_PAWN: opponent.choose_pawn()
 		res.STAGE_SHOW_ACTIONS: opponent.chase_nearest_enemy()
 		res.STAGE_SHOW_MOVEMENTS: opponent.is_pawn_done_moving()
-		res.STAGE_SELECT_LOCATION: opponent.choose_pawn_to_attack(potential_targets) # Parameter übergeben
+		res.STAGE_SELECT_LOCATION: opponent.choose_pawn_to_attack() # Correct call is handled in tactics_opponent.gd
 		res.STAGE_MOVE_PAWN: participant.serv.combat_service.attack_pawn(delta, false)
 
 

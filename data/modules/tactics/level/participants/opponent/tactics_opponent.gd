@@ -5,8 +5,6 @@ extends TacticsParticipant
 ## Service: [TacticsOpponentService]
 
 ## Service handling opponent-specific logic and operations
-@export var player: TacticsPlayer
-
 var opponent_serv: TacticsOpponentService
 
 
@@ -43,4 +41,8 @@ func is_pawn_done_moving() -> void:
 
 ## Chooses a pawn for the opponent to attack
 func choose_pawn_to_attack() -> void:
-	opponent_serv.choose_pawn_to_attack() # Delegate to the service
+	if player:
+		opponent_serv.choose_pawn_to_attack(player.get_children())
+	else:
+		push_error("Opponent has no reference to the player node to get potential targets.")
+		opponent_serv.choose_pawn_to_attack([]) # Call with empty array to avoid crash

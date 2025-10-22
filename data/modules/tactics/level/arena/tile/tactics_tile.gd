@@ -10,23 +10,23 @@ var hover_reachable_mat: StandardMaterial3D = TacticsConfig.mat_color.reachable_
 var attackable_mat: StandardMaterial3D = TacticsConfig.mat_color.attackable
 var hover_attackable_mat: StandardMaterial3D = TacticsConfig.mat_color.hover_attackable
 
-# FIX: Verwende Property Setters, um _update_material() nur bei Änderung aufzurufen.
-var hover: bool = false:
+# FIX: Überschreibe die Setter der geerbten Variablen, ohne sie neu zu deklarieren.
+hover:
 	set(value):
-		if hover != value:
-			hover = value
+		if super.hover != value:
+			super.hover = value
 			_update_material()
 
-var reachable: bool = false:
+reachable:
 	set(value):
-		if reachable != value:
-			reachable = value
+		if super.reachable != value:
+			super.reachable = value
 			_update_material()
 
-var attackable: bool = false:
+attackable:
 	set(value):
-		if attackable != value:
-			attackable = value
+		if super.attackable != value:
+			super.attackable = value
 			_update_material()
 
 # Die _process-Funktion wird komplett entfernt.

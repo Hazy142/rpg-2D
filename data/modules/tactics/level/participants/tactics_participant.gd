@@ -16,9 +16,9 @@ var serv: TacticsParticipantService
 ## Reference to the TacticsArena node
 var arena: TacticsArena
 ## Reference to the TacticsPlayer node
-@onready var player: TacticsPlayer = %TacticsPlayer
+@export var player: TacticsPlayer
 ## Reference to the TacticsOpponent node
-@onready var opponent: TacticsOpponent = %TacticsOpponent
+@export var opponent: TacticsOpponent
 
 
 ## Initializes the TacticsParticipant node
@@ -29,8 +29,11 @@ func _ready() -> void:
 	else:
 		push_error("TacticsArena node not found in the parent scene!")
 
+	# Initialize the service with necessary resources
 	serv = TacticsParticipantService.new(res, camera, controls)
+	# Set up the service with this node as context
 	serv.setup(self)
+	# Connect the skip_turn signal to the skip_turn method
 	res.connect("called_skip_turn", skip_turn)
 
 
