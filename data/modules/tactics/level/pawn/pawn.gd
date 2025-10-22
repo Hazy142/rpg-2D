@@ -28,7 +28,7 @@ var expertise: String:
 func _ready() -> void:
 	res = TacticsPawnResource.new()
 	serv = TacticsPawnService.new()
-	serv.setup(self)
+	serv.setup_animation(self)
 	controls.set_actions_menu_visibility(false, self)
 	show_pawn_stats(false)
 
@@ -40,7 +40,8 @@ func _physics_process(delta: float) -> void:
 	var tile = get_tile()
 	if DebugLog.debug_enabled:
 		print("Pawn Position: ", position, " | Tile: ", tile)
-	serv.process(self, delta)
+	serv.start_animator(self)
+	serv.tint_when_unable_to_act(self)
 
 
 ## Centers the pawn on its current tile
@@ -73,12 +74,11 @@ func get_tile() -> BaseTile: # This method is called by TacticsOpponentService.c
 		if DebugLog.debug_enabled: print("Found TacticsTile!")
 		return collider as TacticsTile
 	elif collider is StaticBody3D:
-		if not WorldGeneration.instance:
-			if DebugLog.debug_enabled: print("ERROR: WorldGeneration instance not found!")
+		if WorldService.procedural_tiles.is_empty():
+			if DebugLog.debug_enabled: print("ERROR: WorldService has no procedural tiles!")
 			return null
 		
-		var world_gen = WorldGeneration.instance
-		if DebugLog.debug_enabled: print("WorldGeneration found! Dictionary has ", world_gen.procedural_tiles.size(), " tiles")
+		if DebugLog.debug_enabled: print("WorldService found! Dictionary has ", WorldService.procedural_tiles.size(), " tiles")
 		
 		# Use the collision point's coordinates for a more accurate lookup, especially for Y-level
 		var x = int(round(position.x))
@@ -88,7 +88,7 @@ func get_tile() -> BaseTile: # This method is called by TacticsOpponentService.c
 		
 		if DebugLog.debug_enabled: print("Searching for key: ", search_key)
 		
-		var proc_tile = world_gen.procedural_tiles.get(search_key)
+		var proc_tile = WorldService.procedural_tiles.get(search_key)
 		
 		if proc_tile:
 			if DebugLog.debug_enabled: print("✓ FOUND ProceduralTile!")
@@ -151,4 +151,4 @@ func attack_target_pawn(target_pawn: TacticsPawn, delta: float) -> bool:
 ##
 ## @param delta: Time elapsed since the last frame
 func move_along_path(delta: float) -> void:
-	serv.movement.move_along_path(self, delta)
+	serv.move_along_path(self, delta)

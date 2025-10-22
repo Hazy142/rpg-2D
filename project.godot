@@ -19,6 +19,7 @@ config/icon="res://assets/textures/ui/icons/icon.png"
 
 [autoload]
 
+WorldService="*res://scripts/world_service.gd"
 DebugMenu="*res://addons/debug_menu/debug_menu.tscn"
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 

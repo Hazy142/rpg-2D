@@ -8,15 +8,10 @@ var noise = FastNoiseLite.new()
 var generated_cubes = {}
 var procedural_tiles = {}
 
-# ===== NEUE GLOBALE REFERENZ =====
-static var instance: WorldGeneration
-
 func _ready():
-	# ===== Speichere dich selbst =====
-	WorldGeneration.instance = self
-	
 	generated_cubes = {}
 	generate_new_cubes_from_position(Vector3(0, 0, 0))
+	WorldService.procedural_tiles = procedural_tiles
 	print("✓ Procedural terrain created! (%d cubes)" % get_child_count())
 	generated_cubes = {}
 	generate_new_cubes_from_position(Vector3(0, 0, 0))
@@ -42,11 +37,11 @@ func generate_cube_if_new(x, z):
 		
 		# ===== NEU: ProceduralTile wrapper =====
 		var proc_tile = ProceduralTile.new(static_body, Vector3(x, height, z))
-		procedural_tiles[Vector3(x, 0, z)] = proc_tile  # ← Mit y=0
+		procedural_tiles[Vector3(x, height, z)] = proc_tile
 		
 		# ===== DEBUG: Zeige mir die ersten 5 Tiles =====
 		if procedural_tiles.size() <= 5:
-			print("✓ Tile registered at KEY: ", Vector3(x, 0, z), 
+			print("✓ Tile registered at KEY: ", Vector3(x, height, z),
 				  " | Actual terrain height: ", height,
 				  " | Total tiles: ", procedural_tiles.size())
 
@@ -66,7 +61,7 @@ func create_cube(position, color) -> StaticBody3D:
 	
 	# ===== Physics Layer setzen (RICHTIG!) =====
 	static_body.collision_layer = 1
-	static_body.collision_mask = 0
+	static_body.collision_mask = 1
 	
 	var mesh = MeshInstance3D.new()
 	var box = BoxMesh.new()
