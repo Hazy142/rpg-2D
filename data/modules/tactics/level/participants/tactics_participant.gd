@@ -14,7 +14,7 @@ extends Node3D
 ## Service handling participant logic and operations
 var serv: TacticsParticipantService
 ## Reference to the TacticsArena node
-@onready var arena: TacticsArena = %TacticsArena
+var arena: TacticsArena
 ## Reference to the TacticsPlayer node
 @onready var player: TacticsPlayer = %TacticsPlayer
 ## Reference to the TacticsOpponent node
@@ -23,11 +23,14 @@ var serv: TacticsParticipantService
 
 ## Initializes the TacticsParticipant node
 func _ready() -> void:
-	# Initialize the service with necessary resources
+	# FIX: Finde die Arena über den Owner (die Level-Szene), anstatt einen ungültigen Pfad zu nutzen.
+	if owner and owner.has_node("TacticsArena"):
+		arena = owner.get_node("TacticsArena")
+	else:
+		push_error("TacticsArena node not found in the parent scene!")
+
 	serv = TacticsParticipantService.new(res, camera, controls)
-	# Set up the service with this node as context
 	serv.setup(self)
-	# Connect the skip_turn signal to the skip_turn method
 	res.connect("called_skip_turn", skip_turn)
 
 

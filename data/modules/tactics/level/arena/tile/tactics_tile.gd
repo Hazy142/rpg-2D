@@ -1,85 +1,77 @@
 class_name TacticsTile
 extends BaseTile
-## Handles tiles, hover colors, tile state, pathfinding.
-## 
-## This is ultimately a module, as it is programatically appended onto every tile by way of the TacticsTileService.
-## Dependencies: [TacticsTileService] [br]
-## Used by: [TacticsArena]
 
-#region: --- Props ---
-## Resource for tile raycasting
 var tile_raycast: Resource = load("res://data/modules/tactics/level/arena/tile/raycast/tile_raycasting.tscn")
 
-
-## Material for hover state
+# Materialien werden nur einmal geladen
 var hover_mat: StandardMaterial3D = TacticsConfig.mat_color.hover
-## Material for reachable state
 var reachable_mat: StandardMaterial3D = TacticsConfig.mat_color.reachable
-## Material for hover and reachable state
 var hover_reachable_mat: StandardMaterial3D = TacticsConfig.mat_color.reachable_hover
-## Material for attackable state
 var attackable_mat: StandardMaterial3D = TacticsConfig.mat_color.attackable
-## Material for hover and attackable state
 var hover_attackable_mat: StandardMaterial3D = TacticsConfig.mat_color.hover_attackable
-#endregion
 
-#region: --- Processing ---
-func _process(_delta: float) -> void:
-	# Get child node named "Tile" and cast it to a MeshInstance3D.
-	# If the node doesn't exist, it will be null.
-	var tile: MeshInstance3D = get_node_or_null("Tile") as MeshInstance3D
-	if not tile:
-		return # If the "Tile" node wasn't found, the function exits early to avoid errors.
-	
-	# Set visibility of the tile to visible if attackable, reachable, or hover are true.
-	tile.visible = attackable or reachable or hover # Set visibility based on tile state
-	
-	match hover:
-		true: # If hover is true, decide which material to use based on the tile's state
-			if reachable:
-				tile.material_override = hover_reachable_mat
-			elif attackable:
-				tile.material_override = hover_attackable_mat
-			else:
-				tile.material_override = hover_mat
-		false: # If hover is false, this block decides between two materials
-			if reachable:
-				tile.material_override = reachable_mat
-			elif attackable:
-				tile.material_override = attackable_mat
-#endregion
+# FIX: Verwende Property Setters, um _update_material() nur bei Änderung aufzurufen.
+var hover: bool = false:
+	set(value):
+		if hover != value:
+			hover = value
+			_update_material()
 
-#region: --- Methods ---
-# Getters
-## Returns all 4 directly adjacent tiles
+var reachable: bool = false:
+	set(value):
+		if reachable != value:
+			reachable = value
+			_update_material()
+
+var attackable: bool = false:
+	set(value):
+		if attackable != value:
+			attackable = value
+			_update_material()
+
+# Die _process-Funktion wird komplett entfernt.
+func _update_material():
+	var tile_mesh: MeshInstance3D = get_node_or_null("Tile")
+	if not tile_mesh:
+		return
+
+	tile_mesh.visible = attackable or reachable or hover
+
+	if hover:
+		if reachable:
+			tile_mesh.material_override = hover_reachable_mat
+		elif attackable:
+			tile_mesh.material_override = hover_attackable_mat
+		else:
+			tile_mesh.material_override = hover_mat
+	else:
+		if reachable:
+			tile_mesh.material_override = reachable_mat
+		elif attackable:
+			tile_mesh.material_override = attackable_mat
+		else:
+			# Wenn kein Zustand aktiv ist, Material entfernen, um das Original zu zeigen
+			tile_mesh.material_override = null
+
+# ... Restliche Funktionen (get_neighbors, get_tile_occupier, etc.) bleiben gleich ...
 func get_neighbors(_height: float = 0.0) -> Array:
 	return $RayCasting.get_all_neighbors(_height)
 
-
-## Returns any collider directly (<=1m) above
 func get_tile_occupier() -> Node:
 	return $RayCasting.get_object_above()
 
-
-
-## Return whether target tile is occupied
 func is_taken() -> bool:
 	return get_tile_occupier() != null
 
-
-# Setters
-## Resets the tile's markers (pf_root, pf_distance, reachable, attackable)
 func reset_markers() -> void:
 	pf_root = null
 	pf_distance = 0
-	reachable = false
-	attackable = false
+	# Setze die Member-Variablen direkt, um den Setter zu triggern
+	self.reachable = false
+	self.attackable = false
+	self.hover = false
 
-
-## Initializes tile (disable hover, instantiate raycast & reset state)
 func configure_tile() -> void:
-	hover = false
-	var instance: Node = tile_raycast.instantiate() # Instantiate raycast
-	add_child(instance) # Add raycast as child
-	reset_markers() # Reset tile markers
-#endregion
+	var instance: Node = tile_raycast.instantiate()
+	add_child(instance)
+	reset_markers()

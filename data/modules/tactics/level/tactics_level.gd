@@ -52,6 +52,11 @@ func _ready() -> void:
 	if camera.boundary_radius != camera_boundary_radius:
 		camera.boundary_radius = camera_boundary_radius
 
+	# Dependency Injection: Weise die Referenzen vom übergeordneten Knoten aus zu.
+	if player and opponent:
+		player.opponent = opponent
+		opponent.player = player
+
 
 func _physics_process(delta: float) -> void:
 	match turn_stage:

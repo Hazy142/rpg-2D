@@ -35,23 +35,26 @@ func configure_tiles(arena: TacticsArena) -> void:
 		_tiles.visible = false
 		TILE_SERVICE.tiles_into_staticbodies(_tiles)
 
-## Process tiles surrounding a root tile
 func process_surrounding_tiles(root_tile: Node, height: float, allies_on_map: Array = []) -> void:
-	# ===== Erlaubt jetzt beide Tile-Typen =====
+	# FIX: Behandle alle BaseTile-Typen polymorphisch und entferne die explizite Exklusion.
+	if not root_tile:
+		return
+
 	var _tiles_process_q: Array = [root_tile]
-	
+
 	while not _tiles_process_q.is_empty():
 		var _curr_tile = _tiles_process_q.pop_front()
-		
-		if _curr_tile is ProceduralTile:
-			# ProceduralTiles haben keine Neighbors
+
+		# ProceduralTiles haben keine vordefinierten Nachbarn, daher wird die Schleife für sie leer sein.
+		# Das ist korrektes polymorphes Verhalten.
+		if not _curr_tile.has_method("get_neighbors"):
 			continue
-		
-		var _add_to_tiles_list: Callable = func _add(_neighbor: TacticsTile) -> void:
+
+		var _add_to_tiles_list: Callable = func(_neighbor: TacticsTile) -> void:
 			_neighbor.pf_root = _curr_tile
 			_neighbor.pf_distance = _curr_tile.pf_distance + 1
 			_tiles_process_q.push_back(_neighbor)
-		
+
 		for _neighbor in _curr_tile.get_neighbors(height):
 			if not _neighbor.pf_root and _neighbor != root_tile:
 				if not _neighbor.is_taken():

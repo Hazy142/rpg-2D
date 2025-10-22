@@ -5,6 +5,8 @@ extends TacticsParticipant
 ## Service: [TacticsOpponentService]
 
 ## Service handling opponent-specific logic and operations
+@export var player: TacticsPlayer
+
 var opponent_serv: TacticsOpponentService
 
 
@@ -28,7 +30,10 @@ func choose_pawn() -> void:
 
 ## Initiates the action of chasing the nearest enemy
 func chase_nearest_enemy() -> void:
-	opponent_serv.chase_nearest_enemy(self, get_node("../TacticsPlayer")) # Delegate to the service
+	if player:
+		opponent_serv.chase_nearest_enemy(self, player)
+	else:
+		push_error("Opponent has no reference to the player node.")
 
 
 ## Checks if the opponent's pawn has finished moving
