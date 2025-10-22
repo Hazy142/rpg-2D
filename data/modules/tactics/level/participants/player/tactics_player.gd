@@ -22,7 +22,7 @@ func _ready() -> void:
 ## @param _delta: Time elapsed since the last frame (unused)
 func _physics_process(_delta: float) -> void:
 	# Toggle the display of enemy stats
-	player_serv.toggle_enemy_stats(get_node("../TacticsOpponent"))
+	player_serv.toggle_enemy_stats(get_node("../TacticsOpponent")) ## @note: Hardcoded node path, consider using @export or group search for robustness.
 
 
 ## Checks if the player's pawn is properly configured

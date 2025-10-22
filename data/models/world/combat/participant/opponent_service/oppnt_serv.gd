@@ -85,7 +85,7 @@ func choose_pawn_to_attack() -> void:
 	arena.process_surrounding_tiles(res.curr_pawn.get_tile(), res.curr_pawn.stats.attack_range)
 	arena.mark_attackable_tiles(res.curr_pawn.get_tile(), res.curr_pawn.stats.attack_range)
 	
-	res.attackable_pawn = arena.get_weakest_attackable_pawn(res.targets.get_children())
+	res.attackable_pawn = arena.get_weakest_attackable_pawn(res.targets.get_children()) ## @bug: 'res.targets' is not defined in TacticsParticipantResource. It needs to be a Node containing the targets.
 	if res.attackable_pawn:
 		if DebugLog.debug_enabled:
 			print_rich("[color=orange]Weakest target detected:", res.attackable_pawn, "[/color]")

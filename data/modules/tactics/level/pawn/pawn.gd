@@ -13,11 +13,15 @@ var serv: TacticsPawnService
 ## Reference to the Stats node, handling pawn statistics
 @onready var stats: Stats = $Expertise/Stats
 ## The expertise (class or type) of the pawn
-@onready var expertise: String = $Expertise/Stats.expertise
+var expertise: String:
+	get:
+		return stats.expertise
+	set(value):
+		stats.expertise = value # Allow setting if needed, or remove setter if read-only
 ## Reference to the TacticsPawnSprite node, handling visual representation
 @onready var character: TacticsPawnSprite = $Character
-
-@onready var tile_raycast: RayCast3D = $Tile
+## RayCast3D to detect the tile the pawn is currently on
+@onready var tile_detector: RayCast3D = $Tile
 
 
 ## Initializes the TacticsPawn node
@@ -34,62 +38,66 @@ func _ready() -> void:
 ## @param delta: Time elapsed since the last frame
 func _physics_process(delta: float) -> void:
 	var tile = get_tile()
-	print("Pawn Position: ", position, " | Tile: ", tile)
+	if DebugLog.debug_enabled:
+		print("Pawn Position: ", position, " | Tile: ", tile)
 	serv.process(self, delta)
 
 
 ## Centers the pawn on its current tile
 ##
 ## @return: Whether the centering operation was successful
-func center() -> bool:
+func center() -> bool: # This method is called by TacticsOpponentService.is_pawn_configured
 	return character.adjust_to_center(self)
 
 
 ## Shows or hides the pawn's stats UI
 ##
 ## @param v: Whether to show (true) or hide (false) the stats
-func show_pawn_stats(v: bool) -> void:
+func show_pawn_stats(v: bool) -> void: # This method is called by TacticsPawnService.setup
 	$Character/CharacterUI.visible = v
 
 
 ## Gets the tile the pawn is currently on
 ##
 ## @return: The BaseTile the pawn is on
-func get_tile() -> BaseTile:
-	var collider = $Tile.get_collider()
+func get_tile() -> BaseTile: # This method is called by TacticsOpponentService.chase_nearest_enemy, TacticsOpponentService.choose_pawn_to_attack
+	var collider = tile_detector.get_collider()
+	var collision_point = tile_detector.get_collision_point()
 	
-	print("\n--- GET_TILE DEBUG ---")
-	print("Pawn raw position: ", position)
+	if DebugLog.debug_enabled:
+		print("\n--- GET_TILE DEBUG ---")
+		print("Pawn raw position: ", position)
+		print("RayCast collision point: ", collision_point)
 	
 	if collider is TacticsTile:
-		print("Found TacticsTile!")
+		if DebugLog.debug_enabled: print("Found TacticsTile!")
 		return collider as TacticsTile
 	elif collider is StaticBody3D:
-		print("Found StaticBody3D - trying procedural lookup...")
-		
 		if not WorldGeneration.instance:
-			print("ERROR: WorldGeneration instance not found!")
+			if DebugLog.debug_enabled: print("ERROR: WorldGeneration instance not found!")
 			return null
 		
 		var world_gen = WorldGeneration.instance
-		print("WorldGeneration found! Dictionary has ", world_gen.procedural_tiles.size(), " tiles")
+		if DebugLog.debug_enabled: print("WorldGeneration found! Dictionary has ", world_gen.procedural_tiles.size(), " tiles")
 		
+		# Use the collision point's coordinates for a more accurate lookup, especially for Y-level
 		var x = int(round(position.x))
-		var z = int(round(position.z))
-		var search_key = Vector3(x, 0, z)
+		var y = int(round(collision_point.y)) # Use collision point's Y for multi-level maps
+		var z = int(round(position.z)) 
+		var search_key = Vector3(x, y, z)
 		
-		print("Searching for key: ", search_key)
+		if DebugLog.debug_enabled: print("Searching for key: ", search_key)
 		
 		var proc_tile = world_gen.procedural_tiles.get(search_key)
 		
 		if proc_tile:
-			print("✓ FOUND ProceduralTile!")
+			if DebugLog.debug_enabled: print("✓ FOUND ProceduralTile!")
 			return proc_tile as ProceduralTile
 		else:
-			print("✗ NOT found!")
+			if DebugLog.debug_enabled: print("✗ NOT found!")
 			return null
 	
-	print("No collider found!")
+	if DebugLog.debug_enabled: print("No collider found!")
 	return null
 
 ## Checks if the pawn is alive

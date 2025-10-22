@@ -16,7 +16,7 @@ const GRAVITY_STRENGTH: int = 6
 ## Minimum time required for an attack animation
 const MIN_TIME_FOR_ATTACK: float = 1.0
 ## Number of frames in the pawn's animation
-const ANIMATION_FRAMES: int = 1
+const ANIMATION_FRAMES: int = 1 ## Currently set to 1, assuming no animation or placeholder
 
 ## Whether the pawn's HUD is currently enabled
 var pawn_hud_enabled: bool = false
@@ -32,7 +32,7 @@ var is_moving: bool = false
 ## The direction the pawn is moving in
 var move_direction: Vector3 = Vector3.ZERO
 ## Stack of tiles representing the pawn's pathfinding route
-var pathfinding_tilestack: Array[Variant] = []
+var pathfinding_tilestack: Array[BaseTile] = [] ## Assuming BaseTile or TacticsTile
 ## Current gravity vector applied to the pawn
 var gravity: Vector3 = Vector3.ZERO
 ## Delay before the pawn can perform its next action
@@ -66,6 +66,7 @@ func set_moving(value: bool) -> void:
 ## Sets the pawn's attacking state and emits the pawn_attacked signal if false
 ##
 ## @param value: Whether the pawn can attack or not
+## @note: The 'pawn_attacked' signal is currently emitted when the pawn *loses* the ability to attack.
 func set_attacking(value: bool) -> void:
 	can_attack = value
 	if not value:
