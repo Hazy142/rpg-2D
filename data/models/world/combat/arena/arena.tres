@@ -1,6 +1,6 @@
-[gd_resource type="Resource" script_class="TacticsArenaResource" load_steps=2 format=3 uid="uid://bkmsfqmun0dro"]
+[gd_resource type="Resource" script_class="TacticsArenaResource" load_steps=2 format=3]
 
-[ext_resource type="Script" uid="uid://d214rt0t6mgxt" path="res://data/models/world/combat/arena/arena_res.gd" id="1_k5x2i"]
+[ext_resource type="Script" path="res://data/models/world/combat/arena/arena_res.gd" id="1_arena_res"]
 
 [resource]
-script = ExtResource("1_k5x2i")
+script = ExtResource("1_arena_res")

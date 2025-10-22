@@ -1,6 +1,11 @@
-[gd_resource type="Resource" script_class="TacticsParticipantResource" load_steps=2 format=3 uid="uid://rx5powb1y0bt"]
+[gd_resource type="Resource" script_class="TacticsParticipantResource" load_steps=2 format=3]
 
-[ext_resource type="Script" path="res://data/models/world/combat/participant/particpt_res.gd" id="1_dceh0"]
+[ext_resource type="Script" path="res://data/models/world/combat/participant/particpt_res.gd" id="1_part_res"]
 
 [resource]
-script = ExtResource("1_dceh0")
+script = ExtResource("1_part_res")
+stage = 0
+curr_pawn = null
+attackable_pawn = null
+display_opponent_stats = false
+turn_just_started = true

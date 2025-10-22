@@ -20,7 +20,6 @@ config/icon="res://assets/textures/ui/icons/icon.png"
 [autoload]
 
 WorldService="*res://scripts/world_service.gd"
-DebugMenu="*res://addons/debug_menu/debug_menu.tscn"
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 
 [debug]
@@ -48,9 +47,7 @@ folder_colors={
 "res://assets/maps/": "purple",
 "res://data/": "green",
 "res://data/models/": "yellow",
-"res://data/modules/": "green",
-"res://maps/": "orange",
-"res://modules/": "yellow"
+"res://data/modules/": "green"
 }
 
 [godot_hub]

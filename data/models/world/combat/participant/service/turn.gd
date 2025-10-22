@@ -53,16 +53,26 @@ func handle_player_turn(delta: float, player: TacticsPlayer, participant: Tactic
 ## @param opponent: The TacticsOpponent node
 ## @param participant: The TacticsParticipant node
 func handle_opponent_turn(delta: float, opponent: TacticsOpponent, participant: TacticsParticipant) -> void:
-	res.targets = participant.get_node("%TacticsPlayer")
+	# FIX: Hole die Ziele hier und übergebe sie als Parameter.
+	var player_node = participant.owner.find_child("TacticsPlayer")
+	if not player_node:
+		push_error("Opponent cannot act: TacticsPlayer node not found.")
+		# Beende den Zug des Gegners, um eine Endlosschleife zu vermeiden
+		for p in opponent.get_children():
+			if p is TacticsPawn:
+				p.end_pawn_turn()
+		return
+
+	var potential_targets = player_node.get_children()
 	controls.set_actions_menu_visibility(false, null)
 	if res.stage > 4:
 		res.stage = 0
-		DebugLog.debug_nospam("turn_stage", res.stage)
+	DebugLog.debug_nospam("turn_stage", res.stage)
 	match res.stage:
 		res.STAGE_SELECT_PAWN: opponent.choose_pawn()
 		res.STAGE_SHOW_ACTIONS: opponent.chase_nearest_enemy()
 		res.STAGE_SHOW_MOVEMENTS: opponent.is_pawn_done_moving()
-		res.STAGE_SELECT_LOCATION: opponent.choose_pawn_to_attack()
+		res.STAGE_SELECT_LOCATION: opponent.choose_pawn_to_attack(potential_targets) # Parameter übergeben
 		res.STAGE_MOVE_PAWN: participant.serv.combat_service.attack_pawn(delta, false)
 
 

@@ -79,13 +79,19 @@ func is_pawn_done_moving() -> void:
 		res.stage = res.STAGE_SELECT_LOCATION
 
 
-## Selects a pawn for the opponent to attack
-func choose_pawn_to_attack() -> void:
+func choose_pawn_to_attack(potential_targets: Array) -> void:
 	arena.reset_all_tile_markers()
 	arena.process_surrounding_tiles(res.curr_pawn.get_tile(), res.curr_pawn.stats.attack_range)
 	arena.mark_attackable_tiles(res.curr_pawn.get_tile(), res.curr_pawn.stats.attack_range)
-	
-	res.attackable_pawn = arena.get_weakest_attackable_pawn(res.targets.get_children()) ## @bug: 'res.targets' is not defined in TacticsParticipantResource. It needs to be a Node containing the targets.
+
+	# FIX: Nutze den übergebenen Parameter anstatt der fragilen res.targets-Variable.
+	if potential_targets.is_empty():
+		if DebugLog.debug_enabled:
+			print_rich("[color=orange]No potential targets provided to AI.[/color]")
+		res.attackable_pawn = null
+	else:
+		res.attackable_pawn = arena.get_weakest_attackable_pawn(potential_targets)
+
 	if res.attackable_pawn:
 		if DebugLog.debug_enabled:
 			print_rich("[color=orange]Weakest target detected:", res.attackable_pawn, "[/color]")
@@ -93,6 +99,6 @@ func choose_pawn_to_attack() -> void:
 		camera.target = res.attackable_pawn
 	else:
 		if DebugLog.debug_enabled:
-			print_rich("[color=orange]No target detected.[/color]")
-		
+			print_rich("[color=orange]No attackable target found in range.[/color]")
+
 	res.stage = res.STAGE_MOVE_PAWN

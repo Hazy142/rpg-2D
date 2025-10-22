@@ -58,46 +58,20 @@ func show_pawn_stats(v: bool) -> void: # This method is called by TacticsPawnSer
 	$Character/CharacterUI.visible = v
 
 
-## Gets the tile the pawn is currently on
-##
-## @return: The BaseTile the pawn is on
-func get_tile() -> BaseTile: # This method is called by TacticsOpponentService.chase_nearest_enemy, TacticsOpponentService.choose_pawn_to_attack
+func get_tile() -> BaseTile:
 	var collider = tile_detector.get_collider()
-	var collision_point = tile_detector.get_collision_point()
-	
-	if DebugLog.debug_enabled:
-		print("\n--- GET_TILE DEBUG ---")
-		print("Pawn raw position: ", position)
-		print("RayCast collision point: ", collision_point)
-	
+
+	if not collider:
+		return null
+
+	# Standardfall für statische Karten
 	if collider is TacticsTile:
-		if DebugLog.debug_enabled: print("Found TacticsTile!")
-		return collider as TacticsTile
-	elif collider is StaticBody3D:
-		if WorldService.procedural_tiles.is_empty():
-			if DebugLog.debug_enabled: print("ERROR: WorldService has no procedural tiles!")
-			return null
-		
-		if DebugLog.debug_enabled: print("WorldService found! Dictionary has ", WorldService.procedural_tiles.size(), " tiles")
-		
-		# Use the collision point's coordinates for a more accurate lookup, especially for Y-level
-		var x = int(round(position.x))
-		var y = int(round(collision_point.y)) # Use collision point's Y for multi-level maps
-		var z = int(round(position.z)) 
-		var search_key = Vector3(x, y, z)
-		
-		if DebugLog.debug_enabled: print("Searching for key: ", search_key)
-		
-		var proc_tile = WorldService.procedural_tiles.get(search_key)
-		
-		if proc_tile:
-			if DebugLog.debug_enabled: print("✓ FOUND ProceduralTile!")
-			return proc_tile as ProceduralTile
-		else:
-			if DebugLog.debug_enabled: print("✗ NOT found!")
-			return null
-	
-	if DebugLog.debug_enabled: print("No collider found!")
+		return collider
+
+	# Fall für prozedurale Karten: Direkter O(1) Lookup via Meta-Data
+	if collider is StaticBody3D and collider.has_meta("tile_data"):
+		return collider.get_meta("tile_data") as BaseTile
+
 	return null
 
 ## Checks if the pawn is alive

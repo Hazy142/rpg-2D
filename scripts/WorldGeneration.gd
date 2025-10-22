@@ -9,10 +9,7 @@ var generated_cubes = {}
 var procedural_tiles = {}
 
 func _ready():
-	generated_cubes = {}
-	generate_new_cubes_from_position(Vector3(0, 0, 0))
-	WorldService.procedural_tiles = procedural_tiles
-	print("✓ Procedural terrain created! (%d cubes)" % get_child_count())
+	WorldGeneration.instance = self
 	generated_cubes = {}
 	generate_new_cubes_from_position(Vector3(0, 0, 0))
 	print("✓ Procedural terrain created! (%d cubes)" % get_child_count())
@@ -27,23 +24,20 @@ func generate_new_cubes_from_position(center_position):
 		for z in range(start_z, end_z):
 			generate_cube_if_new(x, z)
 
-# ===== GEÄNDERT: Neue Signatur, nutzt height =====
 func generate_cube_if_new(x, z):
 	if not has_cube_been_generated(x, z):
 		var noise_val = noise.get_noise_2d(x, z)
 		var height = noise_val * VERTICAL_AMPLITUDE
 		var static_body = create_cube(Vector3(x, height, z), get_color_from_noise(noise_val))
 		register_cube_generation_at_coordinate(x, z)
-		
-		# ===== NEU: ProceduralTile wrapper =====
+
+		# FIX: Erstelle die logische Kachel, verknüpfe sie via Meta-Data und füge sie zum Szenenbaum hinzu.
 		var proc_tile = ProceduralTile.new(static_body, Vector3(x, height, z))
-		procedural_tiles[Vector3(x, height, z)] = proc_tile
-		
-		# ===== DEBUG: Zeige mir die ersten 5 Tiles =====
-		if procedural_tiles.size() <= 5:
-			print("✓ Tile registered at KEY: ", Vector3(x, height, z),
-				  " | Actual terrain height: ", height,
-				  " | Total tiles: ", procedural_tiles.size())
+		static_body.set_meta("tile_data", proc_tile)
+		add_child(proc_tile) # Wichtig, damit is_inside_tree() funktioniert!
+
+		# Das Dictionary ist jetzt optional, aber wir behalten es für mögliche andere Logiken.
+		procedural_tiles[Vector3(x, 0, z)] = proc_tile
 
 func has_cube_been_generated(x, z):
 	return (x in generated_cubes and z in generated_cubes[x] and generated_cubes[x][z])
